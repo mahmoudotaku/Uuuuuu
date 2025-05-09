@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>تجربة تحميل الفيديو</title>
+</head>
+<body>
+  <h2>أدخل رابط الفيديو</h2>
+  <input type="text" id="videoUrl" placeholder="رابط الفيديو">
+  <button onclick="downloadVideo()">تحميل</button>
+  <p id="status"></p>
+
+  <script>
+    async function downloadVideo() {
+      const url = document.getElementById('videoUrl').value;
+      document.getElementById('status').innerText = "جاري التحميل...";
+
+      const response = await fetch('/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'video.mp4';
+        link.click();
+        document.getElementById('status').innerText = "تم التحميل.";
+      } else {
+        const error = await response.json();
+        document.getElementById('status').innerText = "خطأ: " + error.error;
+      }
+    }
+  </script>
+</body>
+</html>
